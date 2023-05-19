@@ -1,24 +1,20 @@
-import logo from './logo.svg';
+import { Provider } from 'react-redux';
 import './App.css';
-
+import { Router } from './Routes';
+import Actions from './Store/Actions';
+import Store from './Store/Store';
+import { useEffect, useState } from 'react';
+import { Spin } from 'antd';
 function App() {
+  const [loading, setLoading] = useState(true)
+  Actions.hydrateStore().then(() => {
+    setLoading(false)
+  })
+  if (loading) return <Spin />
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={Store}>
+      <Router />
+    </Provider>
   );
 }
 
