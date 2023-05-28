@@ -3,7 +3,7 @@ import './App.css';
 import { Router } from './Routes';
 import Actions from './Store/Actions';
 import Store from './Store/Store';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Spin } from 'antd';
 function App() {
   const [loading, setLoading] = useState(true)

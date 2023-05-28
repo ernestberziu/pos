@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+:where(.css-dev-only-do-not-override-ed5zg0).ant-tabs >.ant-tabs-nav .ant-tabs-nav-wrap, :where(.css-dev-only-do-not-override-ed5zg0).ant-tabs >div>.ant-tabs-nav .ant-tabs-nav-wrap{
+  position: relative;
+  display: flex;
+  flex: auto;
+  align-self: stretch;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translate(0);
+}
