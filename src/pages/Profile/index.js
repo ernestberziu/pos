@@ -18,7 +18,7 @@ export const Profile = () => {
                 <Input placeholder='Emri' />
             </Form.Item>
             <Form.Item name='password'>
-                <Input placeholder='Password' />
+                <Input type="password" placeholder='Password' />
             </Form.Item>
             <Button onClick={() => {
                 form.validateFields().then(() => {

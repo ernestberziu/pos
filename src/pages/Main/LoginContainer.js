@@ -26,7 +26,7 @@ export const LoginContainer = () => {
                         <Input placeholder='Username' />
                     </Form.Item>
                     <Form.Item label='Password' name='password'>
-                        <Input placeholder='Password' />
+                        <Input type='password' placeholder='Password' />
                     </Form.Item>
                     <Button onClick={login}>Hyr</Button>
                 </div>
