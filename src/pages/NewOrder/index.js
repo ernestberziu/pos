@@ -89,7 +89,7 @@ export const NewOrder = () => {
             } else {
                 val = val + ((val * parseFloat(valuePecentage)) / 100)
             }
-        } else val = 0
+        }
         val = val + (val * ((parseFloat(record.tax) / 100)))
         return parseFloat(val.toFixed(2))
     }
@@ -121,7 +121,7 @@ export const NewOrder = () => {
             } else {
                 val = val + ((val * parseFloat(valuePecentage)) / 100)
             }
-        } else val = 0
+        }
         val = (val * ((parseFloat(record.tax) / 100)))
         return parseFloat(val.toFixed(2))
     }
@@ -142,6 +142,20 @@ export const NewOrder = () => {
         newData[index]['totalPrice'] = calculatePriceTotal(newData[index])
         setCurrentOrder(newData);
     };
+
+    const addToCardByOnChange = (el) => {
+        const selectedProduct = products?.find((e) => e?.barcode?.toString() === el)
+        if (selectedProduct) {
+            const existedProduct = currentOrder?.find((e) => e.barcode === selectedProduct.barcode)
+            if (existedProduct) {
+                setCurrentOrder((prev) => [{ ...existedProduct, tax: hasTax ? taxValue : 0, quantity: existedProduct.quantity + 1 }, ...prev.filter((e) => e.barcode !== existedProduct.barcode)])
+                setValue('')
+            } else {
+                setCurrentOrder((prev) => [...prev, { ...selectedProduct, tax: hasTax ? taxValue : 0, quantity: 1 }])
+                setValue('')
+            }
+        }
+    }
 
     const addToCardBySearch = (el) => {
         const selectedProduct = products?.find((e) => e?.barcode?.toString() === el.clipboardData.getData('Text').toString())
@@ -177,7 +191,10 @@ export const NewOrder = () => {
 
     return <div className="new-order-container">
         <div className='new-order-container-order-form'>
-            <Input value={value} onChange={(e) => setValue(e.target.value)} onPressEnter={addToCardBySearchEnter} onPaste={addToCardBySearch} placeholder='Vendosni barcodin' />
+            <Input value={value} onChange={(e) => {
+                addToCardByOnChange(e.target.value)
+                setValue(e.target.value)
+            }} onPressEnter={addToCardBySearchEnter} onPaste={addToCardBySearch} placeholder='Vendosni barcodin' />
             <Table key='table' pagination={false} dataSource={currentOrder} columns={columns} />
             <span>Nen Totali {currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0)}</span>
             <span>Tax Totali {currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0)}</span>
