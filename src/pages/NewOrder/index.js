@@ -154,6 +154,8 @@ export const NewOrder = () => {
                 setCurrentOrder((prev) => [...prev, { ...selectedProduct, tax: hasTax ? taxValue : 0, quantity: 1 }])
                 setValue('')
             }
+        } else {
+            setValue(el)
         }
     }
 
@@ -193,7 +195,6 @@ export const NewOrder = () => {
         <div className='new-order-container-order-form'>
             <Input value={value} onChange={(e) => {
                 addToCardByOnChange(e.target.value)
-                setValue(e.target.value)
             }} onPressEnter={addToCardBySearchEnter} onPaste={addToCardBySearch} placeholder='Vendosni barcodin' />
             <Table key='table' pagination={false} dataSource={currentOrder} columns={columns} />
             <span>Nen Totali {currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0)}</span>
