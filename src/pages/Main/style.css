@@ -14,3 +14,5 @@
     justify-content: center;
     flex-direction: column;
 }
+.main-tabs .ant-tabs-nav-wrap{
+justify-content: center;}

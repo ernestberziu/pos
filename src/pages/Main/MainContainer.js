@@ -42,11 +42,10 @@ const menuItems = (user) => [
 export const MainContainer = () => {
     const navigate = useNavigate()
     const { isLogged, user, settings } = useSelector((state) => state.auth)
-    console.log(settings)
     if (!isLogged && !Object.keys(user)?.length) return <Navigate to='/login' />
     if (settings !== false && !settings._id) return <Navigate to='/settings' />
 
     return <div className="main-container">
-        <Tabs items={menuItems(user)} onChange={navigate} />
+        <Tabs className="main-tabs" items={menuItems(user)} onChange={navigate} />
     </div>
 }
