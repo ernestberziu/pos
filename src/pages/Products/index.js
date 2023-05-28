@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import API from '../../api';
 import { NewProduct } from './NewProduct';
 import { useForm } from 'antd/es/form/Form';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -12,7 +14,7 @@ export const Products = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filteredProducts, setFilteredProducts] = useState([])
     const [form] = useForm()
-
+    const { auth: { user } } = useSelector((state) => state)
 
     const columns = [
         {
@@ -49,14 +51,15 @@ export const Products = () => {
     ];
     const showModal = (id) => {
         setIsModalOpen({ visible: true, id });
+        form.setFieldsValue(products.find(({ _id }) => _id === id) || {})
     };
 
     const handleOk = () => {
-        form.validateFields().then(() => {
+        form.validateFields().then((response) => {
             if (isModalOpen?.id) {
                 API.put(`products/product/${isModalOpen?.id}`, form.getFieldsValue()).then((res) => {
-                    setProducts((rest) => [...rest.filter((el) => el._id !== isModalOpen?.id), res])
-                    setFilteredProducts((rest) => [...rest.filter((el) => el._id !== isModalOpen?.id), res])
+                    setProducts((rest) => [...rest.filter((el) => el._id !== isModalOpen?.id), response])
+                    setFilteredProducts((rest) => [...rest.filter((el) => el._id !== isModalOpen?.id), response])
                     form.resetFields()
                     setIsModalOpen(false);
                 }).catch((e) => message.warning('Dicka shkoi keq'))
@@ -84,6 +87,8 @@ export const Products = () => {
             setFilteredProducts(res)
         }).catch(() => message.warning('Dicka shkoi keq'))
     }, [])
+
+    if (!user.perm_products) return <Navigate to='/newOrder' />
     return <>
         <div className='products-container'>
             <div className='products-container-actions'>
@@ -94,9 +99,9 @@ export const Products = () => {
                 <Table pagination={false} dataSource={filteredProducts} columns={columns} />
             </div>
         </div>
-        <Modal title="Shto Produkt" open={isModalOpen?.visible} onOk={handleOk} onCancel={handleCancel}>
+        <Modal title={isModalOpen?.id ? "Edito Produkt" : "Shto Produkt"} open={isModalOpen?.visible} onOk={handleOk} onCancel={handleCancel}>
             <Form form={form}>
-                <NewProduct />
+                <NewProduct key={isModalOpen} />
             </Form>
         </Modal>
     </>

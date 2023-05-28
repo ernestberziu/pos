@@ -22,7 +22,7 @@ export const slice = createSlice({
       state.false = true
     },
     setUser: (state, payload) => {
-      state.user = payload
+      state.user = payload.payload
     },
     setSettings: (state, payload) => {
       state.settings = payload.payload

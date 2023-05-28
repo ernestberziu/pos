@@ -14,6 +14,7 @@ export const LoginContainer = () => {
             localStorage.setItem('userid', res._id)
             Actions.setLogin()
             Actions.setUser(res)
+            window.location.reload()
         }
         ).catch((err) => console.log(err))
     if (isLogged) return <Navigate to='/' />

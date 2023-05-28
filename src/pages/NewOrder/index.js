@@ -1,10 +1,26 @@
-import { Input, InputNumber, Table, message } from 'antd'
+import { Button, Input, InputNumber, Table, message } from 'antd'
 import './style.css'
 import { useEffect, useState } from 'react';
 import API from '../../api';
+import { useSelector } from 'react-redux';
+import { receipt } from './receipt'
+import printJS from 'print-js';
+function checkTime() {
+    var d = new Date(); // current time
+    var hours = d.getHours();
 
+    return hours >= process.env.REACT_APP_START
+        && hours < process.env.REACT_APP_END;
+}
 export const NewOrder = () => {
-    const [currentOrder, setCurrentOrder] = useState([{ barcode: '99', name: 'malboro', quantity: 1, price: 100, total: 100 }])
+    const [currentOrder, setCurrentOrder] = useState([])
+    const { settings, user } = useSelector((state) => state.auth)
+    const hasTax = settings.settings.applyPercentage
+    const taxValue = settings.settings.percentage || 0
+    const hasNightShift = settings.settings.nightShift
+    const nightShiftMethod = settings.settings.nightShiftMethod
+    const valueFixed = settings.settings.valueFixed
+    const valuePecentage = settings.settings.valuePecentage
     const [products, setProducts] = useState([])
     const [value, setValue] = useState('')
     const columns = [
@@ -23,27 +39,107 @@ export const NewOrder = () => {
             dataIndex: 'quantity',
             key: 'quantity',
             render: (text, record, index) => (
-                <InputNumber value={text} onChange={onInputChange("quantity", index)} />
+                <InputNumber value={parseFloat(text)} onChange={onInputChange("quantity", index)} />
             )
         },
         {
             title: 'Cmimi',
             dataIndex: 'price',
             key: 'price',
+            render: (text, record, index) =>
+                parseFloat(record.price)
+        },
+        {
+            title: 'TVSH',
+            dataIndex: 'tax',
+            key: 'tax',
+            render: (text, record, index) =>
+                record.tax + '%'
+        },
+        {
+            title: 'Extra Nate',
+            dataIndex: 'extraNate',
+            key: 'extraNate',
+            render: (text, record, index) =>
+                hasNightShift ? checkTime() ? nightShiftMethod === 'fixedPrice' ?
+                    parseFloat(valueFixed) : parseFloat(valuePecentage) + '%' : 0 : 0
         },
         {
             title: 'Total',
             dataIndex: 'total',
             key: 'total',
-            render: (text, record, index) => {
-                return (record.quantity * record.price) || 0
-            }
+            render: (text, record, index) => calculateRowTotal(record)
         },
+        {
+            title: 'Fshij',
+            dataIndex: 'fshij',
+            key: 'fshij',
+            render: (text, record, index) => <Button onClick={() => setCurrentOrder((prev) => prev.filter(({ barcode }) => barcode !== record.barcode))}>Fshij</Button>
+        }
     ];
+
+    const calculateRowTotal = (record) => {
+        let val =
+            (parseFloat(record.price) * parseInt(record.quantity))
+        if (hasNightShift && checkTime()) {
+            if (nightShiftMethod === 'fixedPrice') {
+                if (parseFloat(val) !== 0) {
+                    val = val + (parseFloat(valueFixed) * parseInt(record.quantity))
+                }
+            } else {
+                val = val + ((val * parseFloat(valuePecentage)) / 100)
+            }
+        } else val = 0
+        val = val + (val * ((parseFloat(record.tax) / 100)))
+        return parseFloat(val.toFixed(2))
+    }
+
+    const calculateExtraNateTotal = (record) => {
+        let val =
+            (parseFloat(record.price) * parseInt(record.quantity))
+        if (hasNightShift && checkTime()) {
+            if (nightShiftMethod === 'fixedPrice') {
+                if (parseFloat(val) !== 0) {
+                    val = parseFloat(valueFixed) * parseInt(record.quantity)
+                }
+            } else {
+                val = ((val * parseFloat(valuePecentage)) / 100)
+            }
+        } else val = 0
+
+        return parseFloat(val.toFixed(2))
+    }
+
+    const calculateTaxTotal = (record) => {
+        let val =
+            (parseFloat(record.price) * parseInt(record.quantity))
+        if (hasNightShift && checkTime()) {
+            if (nightShiftMethod === 'fixedPrice') {
+                if (parseFloat(val) !== 0) {
+                    val = val + (parseFloat(valueFixed) * parseInt(record.quantity))
+                }
+            } else {
+                val = val + ((val * parseFloat(valuePecentage)) / 100)
+            }
+        } else val = 0
+        val = (val * ((parseFloat(record.tax) / 100)))
+        return parseFloat(val.toFixed(2))
+    }
+
+    const calculatePriceTotal = (record) => {
+        let val =
+            (parseFloat(record.price) * parseInt(record.quantity))
+        return parseFloat(val.toFixed(2))
+    }
+
 
     const onInputChange = (key, index) => (e) => {
         const newData = [...currentOrder];
         newData[index][key] = Number(e);
+        newData[index]['total'] = calculateRowTotal(newData[index])
+        newData[index]['extraNateTotal'] = calculateExtraNateTotal(newData[index])
+        newData[index]['extraTaxTotal'] = calculateTaxTotal(newData[index])
+        newData[index]['totalPrice'] = calculatePriceTotal(newData[index])
         setCurrentOrder(newData);
     };
 
@@ -52,10 +148,10 @@ export const NewOrder = () => {
         if (selectedProduct) {
             const existedProduct = currentOrder?.find((e) => e.barcode === selectedProduct.barcode)
             if (existedProduct) {
-                setCurrentOrder((prev) => [{ ...existedProduct, quantity: existedProduct.quantity + 1 }, ...prev.filter((e) => e.barcode !== existedProduct.barcode)])
+                setCurrentOrder((prev) => [{ ...existedProduct, tax: hasTax ? taxValue : 0, quantity: existedProduct.quantity + 1 }, ...prev.filter((e) => e.barcode !== existedProduct.barcode)])
                 setValue('')
             } else {
-                setCurrentOrder((prev) => [...prev, { ...selectedProduct, quantity: 1 }])
+                setCurrentOrder((prev) => [...prev, { ...selectedProduct, tax: hasTax ? taxValue : 0, quantity: 1 }])
                 setValue('')
             }
         }
@@ -66,10 +162,10 @@ export const NewOrder = () => {
         if (selectedProduct) {
             const existedProduct = currentOrder?.find((e) => e.barcode === selectedProduct.barcode)
             if (existedProduct) {
-                setCurrentOrder((prev) => [{ ...existedProduct, quantity: existedProduct.quantity + 1 }, ...prev.filter((e) => e.barcode !== existedProduct.barcode)])
+                setCurrentOrder((prev) => [{ ...existedProduct, tax: hasTax ? taxValue : 0, quantity: existedProduct.quantity + 1 }, ...prev.filter((e) => e.barcode !== existedProduct.barcode)])
                 setValue('')
             } else {
-                setCurrentOrder((prev) => [...prev, { ...selectedProduct, quantity: 1 }])
+                setCurrentOrder((prev) => [...prev, { ...selectedProduct, tax: hasTax ? taxValue : 0, quantity: 1 }])
                 setValue('')
             }
         }
@@ -82,28 +178,38 @@ export const NewOrder = () => {
     return <div className="new-order-container">
         <div className='new-order-container-order-form'>
             <Input value={value} onChange={(e) => setValue(e.target.value)} onPressEnter={addToCardBySearchEnter} onPaste={addToCardBySearch} placeholder='Vendosni barcodin' />
-            <Table pagination={false} dataSource={currentOrder} columns={columns} />;
+            <Table key='table' pagination={false} dataSource={currentOrder} columns={columns} />
+            <span>Nen Totali {currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0)}</span>
+            <span>Tax Totali {currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0)}</span>
+            <span>Turni 3 Totali {currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0)}</span>
+            <span>Totali {currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0)}</span>
+            <Button onClick={async () => {
+                if (currentOrder.length) {
+                    const item = await API.post('/new', {
+                        subtotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
+                        tax: currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0),
+                        items: [...currentOrder.map((e) => ({ id: e._id, product_name: e.name, barcode: e.barcode, price: parseFloat(e.price), quantity: parseFloat(e.quantity) }))],
+                        total: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
+                        extraNate: currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0),
+                        user: user.fullname,
+                        user_id: user._id
+                    })
+                    printJS({
+                        printable: receipt({
+                            settings: settings.settings, order: currentOrder, date: Date(item.date, 'dd/mm/yyyy hh:mm'),
+                            subTotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
+                            totalVat: currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0),
+                            totalTurni3: currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0),
+                            orderTotal: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
+                            orderNumber: item.order,
+                            user: user.fullname
+                        }), type: 'raw-html'
+                    })
+                } else {
+                    message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
+                }
+
+            }}>Ruaj</Button>
         </div>
-        <div className='new-order-container-products'>
-            <div className='new-order-container-products-search'>
-                <Input placeholder='Kerkoni me barcode ose me emer' />
-            </div>
-            <div className='new-order-container-products-catalog'>
-                {products.map((e, key) => {
-                    return (
-                        <div key={key} className='new-order-container-product'>
-                            <span>
-                                Produkti: {e.name}
-                            </span>
-                            <span>
-                                Cmimi: {e.price}
-                            </span>
-                            <span>
-                                Sasia: {e.quantity}
-                            </span>
-                        </div>)
-                })}
-            </div>
-        </div>
-    </div>
+    </div >
 }
