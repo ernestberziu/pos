@@ -159,20 +159,6 @@ export const NewOrder = () => {
         }
     }
 
-    const addToCardBySearch = (el) => {
-        const selectedProduct = products?.find((e) => e?.barcode?.toString() === el.clipboardData.getData('Text').toString())
-        if (selectedProduct) {
-            const existedProduct = currentOrder?.find((e) => e.barcode === selectedProduct.barcode)
-            if (existedProduct) {
-                setCurrentOrder((prev) => [{ ...existedProduct, tax: hasTax ? taxValue : 0, quantity: existedProduct.quantity + 1 }, ...prev.filter((e) => e.barcode !== existedProduct.barcode)])
-                setValue('')
-            } else {
-                setCurrentOrder((prev) => [...prev, { ...selectedProduct, tax: hasTax ? taxValue : 0, quantity: 1 }])
-                setValue('')
-            }
-        }
-    }
-
     const addToCardBySearchEnter = () => {
         const selectedProduct = products?.find((e) => e?.barcode?.toString() === value)
         if (selectedProduct) {
@@ -195,7 +181,7 @@ export const NewOrder = () => {
         <div className='new-order-container-order-form'>
             <Input value={value} onChange={(e) => {
                 addToCardByOnChange(e.target.value)
-            }} onPressEnter={addToCardBySearchEnter} onPaste={addToCardBySearch} placeholder='Vendosni barcodin' />
+            }} onPressEnter={addToCardBySearchEnter} placeholder='Vendosni barcodin' />
             <Table key='table' pagination={false} dataSource={currentOrder} columns={columns} />
             <span>Nen Totali {currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0)}</span>
             <span>Tax Totali {currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0)}</span>
