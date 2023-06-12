@@ -198,7 +198,6 @@ export const NewOrder = () => {
                         user: user.fullname,
                         user_id: user._id
                     })
-                    setCurrentOrder([])
                     printJS({
                         printable: receipt({
                             settings: settings.settings, order: currentOrder, date: Date(item.date, 'dd/mm/yyyy hh:mm'),
@@ -210,6 +209,7 @@ export const NewOrder = () => {
                             user: user.fullname
                         }), type: 'html', showModal: false,
                     })
+                    setCurrentOrder([])
                 } else {
                     message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
                 }
