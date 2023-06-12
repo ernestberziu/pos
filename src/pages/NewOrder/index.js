@@ -197,7 +197,7 @@ export const NewOrder = () => {
                     orderTotal: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
                     orderNumber: item.order,
                     user: user.fullname
-                }), type: 'raw-html', style: '@media print {body {margin: 0px; }}', showModal: false,
+                }), type: 'raw-html', style: '@media print {body {margin: 0px; }}', honorMarginPadding: false,
             })
         } else {
             message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
