@@ -198,6 +198,7 @@ export const NewOrder = () => {
                         user: user.fullname,
                         user_id: user._id
                     })
+                    setCurrentOrder([])
                     printJS({
                         printable: receipt({
                             settings: settings.settings, order: currentOrder, date: Date(item.date, 'dd/mm/yyyy hh:mm'),
@@ -207,7 +208,7 @@ export const NewOrder = () => {
                             orderTotal: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
                             orderNumber: item.order,
                             user: user.fullname
-                        }), type: 'raw-html'
+                        }), type: 'html', showModal: false,
                     })
                 } else {
                     message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
