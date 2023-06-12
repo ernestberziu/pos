@@ -1,4 +1,4 @@
-export const receipt = ({ settings, order, date, subTotal, totalVat, totalTurni3, orderTotal, orderNumber, user }) => `<div style="font-size: 10px;">                            
+export const receipt = ({ settings, order, date, subTotal, totalVat, totalTurni3, orderTotal, orderNumber, user }) => `<div style="font-size: 14px;">                            
 <p style="text-align: center;">
     <span style="font-size: 22px;">${settings.store}</span> <br>
     ${settings.address_one} <br>
@@ -6,7 +6,7 @@ export const receipt = ({ settings, order, date, subTotal, totalVat, totalTurni3
 </p>
 <hr>
 <left>
-    <p>
+    <p style="font-size:14px">
     Order No : ${orderNumber} <br>
     Cashier : ${user} <br>
     Date : ${date}<br>
@@ -17,35 +17,35 @@ export const receipt = ({ settings, order, date, subTotal, totalVat, totalTurni3
 <table width="100%">
     <thead style="text-align: left;">
     <tr>
-        <th>Item</th>
-        <th>Qty</th>
-        <th>Price</th>
+        <th style="font-size:14px">Item</th>
+        <th style="font-size:14px">Qty</th>
+        <th style="font-size:14px">Price</th>
     </tr>
     </thead>
     <tbody>
-    ${order.map(item => `<tr><td  style="font-size:14px">` + (item.name || item.product_name) + "</td><td>" + item.quantity + "</td><td>" + settings.symbol + parseFloat(item.price).toFixed(2) + "</td></tr>").join('')}
+    ${order.map(item => `<tr><td  style="font-size:14px">` + (item.name || item.product_name) + `</td><td style="font-size:14px" >` + item.quantity + `</td><td style="font-size:14px">` + settings.symbol + parseFloat(item.price).toFixed(2) + `</td></tr style="font-size:14px">`).join('')}
 <tr>
-    <td><b>Nentotali</b></td>
+    <td><b style="font-size:14px">Nentotali</b></td>
     <td>:</td>
-    <td><b>${settings.symbol}${subTotal.toFixed(2)}</b></td>
+    <td style="font-size:14px"><b>${settings.symbol}${subTotal.toFixed(2)}</b></td style="font-size:14px">
 </tr>
     ${settings.applyPercentage ? `<tr>
-    <td>TVSH(${settings.percentage})% </td>
-    <td>:</td>
-    <td>${settings.symbol}${parseFloat(totalVat).toFixed(2)}</td>
+    <td style="font-size:14px">TVSH(${settings.percentage})% </td>
+    <td style="font-size:14px">:</td>
+    <td style="font-size:14px">${settings.symbol}${parseFloat(totalVat).toFixed(2)}</td>
 </tr>`: ''
     }
 ${settings.nightShift ? `<tr>
-<td>TURNI 3(${settings.nightShiftMethod === 'fixedPrice' ? `${settings.symbol}${settings.valueFixed}` : `${settings.valuePecentage}%`}) </td>
-        <td>:</td>
-            <td>${settings.symbol}${parseFloat(totalTurni3).toFixed(2)}</td>
+<td style="font-size:14px">TURNI 3(${settings.nightShiftMethod === 'fixedPrice' ? `${settings.symbol}${settings.valueFixed}` : `${settings.valuePecentage}%`}) </td>
+        <td style="font-size:14px">:</td>
+            <td style="font-size:14px">${settings.symbol}${parseFloat(totalTurni3).toFixed(2)}</td>
 </tr > `: ''
     }
 <tr>
-    <td><h3>Total</h3></td>
-    <td><h3>:</h3></td>
+    <td><h2 >Total</h2></td>
+    <td><h2>:</h2></td>
     <td>
-        <h3>${settings.symbol}${parseFloat(orderTotal).toFixed(2)}</h3>
+        <h2>${settings.symbol}${parseFloat(orderTotal).toFixed(2)}</h2>
     </td>
 </tr>
     </tbody >
