@@ -207,7 +207,7 @@ export const NewOrder = () => {
                             orderTotal: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
                             orderNumber: item.order,
                             user: user.fullname
-                        }), type: 'image', showModal: false,
+                        }), type: 'image', style: '@media print {body {margin: 0px; }}', showModal: false,
                     })
                     setCurrentOrder([])
                 } else {
