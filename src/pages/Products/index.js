@@ -80,10 +80,10 @@ export const Products = () => {
         setIsModalOpen(false);
     };
     const filterProducts = (el) => {
-        if (el === '') {
+        if (el.target.value === '') {
             setFilteredProducts(products)
         } else {
-            setFilteredProducts(products?.filter((e) => e?.barcode?.toString() === el))
+            setFilteredProducts(products?.filter((e) => e?.barcode?.toString() === el.target.value))
         }
     }
     useEffect(() => {
@@ -97,7 +97,7 @@ export const Products = () => {
     return <>
         <div className='products-container'>
             <div className='products-container-actions'>
-                <Input onChange={filterProducts} placeholder='Kerko nga barcodi ose nga emri' />
+                <Input onChange={filterProducts} placeholder='Kerko nga barcodi' />
                 <Button onClick={() => showModal()}>Shto Produkt</Button>
             </div>
             <div className='products-container-table'>
