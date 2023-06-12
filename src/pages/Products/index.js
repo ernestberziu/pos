@@ -83,7 +83,7 @@ export const Products = () => {
         if (!el.target.value) {
             setFilteredProducts(products)
         } else {
-            setFilteredProducts(products?.filter((e) => e?.barcode?.toString() === el.target.value))
+            setFilteredProducts(products?.filter((e) => e?.barcode?.toString().includes(el.target.value)))
         }
     }
     useEffect(() => {
