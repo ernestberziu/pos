@@ -177,6 +177,33 @@ export const NewOrder = () => {
         API.get('products/products').then(setProducts).catch(() => message.warning('Dicka shkoi keq'))
     }, [])
 
+    const saveOrder = async () => {
+        if (currentOrder.length) {
+            const item = await API.post('/new', {
+                subtotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
+                tax: currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0),
+                items: [...currentOrder.map((e) => ({ id: e._id, product_name: e.name, barcode: e.barcode, price: parseFloat(e.price), quantity: parseFloat(e.quantity) }))],
+                total: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
+                extraNate: currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0),
+                user: user.fullname,
+                user_id: user._id
+            })
+            printJS({
+                printable: receipt({
+                    settings: settings.settings, order: currentOrder, date: Date(item.date, 'dd/mm/yyyy hh:mm'),
+                    subTotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
+                    totalVat: currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0),
+                    totalTurni3: currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0),
+                    orderTotal: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
+                    orderNumber: item.order,
+                    user: user.fullname
+                }), type: 'raw-html', style: '@media print {body {margin: 0px; }}', showModal: false,
+            })
+        } else {
+            message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
+        }
+    }
+
     return <div className="new-order-container">
         <div className='new-order-container-order-form'>
             <Input value={value} onChange={(e) => {
@@ -187,33 +214,7 @@ export const NewOrder = () => {
             <span>Tax Totali {currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0)}</span>
             <span>Turni 3 Totali {currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0)}</span>
             <span>Totali {currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0)}</span>
-            <Button onClick={async () => {
-                if (currentOrder.length) {
-                    const item = await API.post('/new', {
-                        subtotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
-                        tax: currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0),
-                        items: [...currentOrder.map((e) => ({ id: e._id, product_name: e.name, barcode: e.barcode, price: parseFloat(e.price), quantity: parseFloat(e.quantity) }))],
-                        total: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
-                        extraNate: currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0),
-                        user: user.fullname,
-                        user_id: user._id
-                    })
-                    printJS({
-                        printable: receipt({
-                            settings: settings.settings, order: currentOrder, date: Date(item.date, 'dd/mm/yyyy hh:mm'),
-                            subTotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
-                            totalVat: currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0),
-                            totalTurni3: currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0),
-                            orderTotal: currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0),
-                            orderNumber: item.order,
-                            user: user.fullname
-                        }), type: 'raw-html', style: '@media print {body {margin: 0px; }}', showModal: false,
-                    })
-                } else {
-                    message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
-                }
-
-            }}>Ruaj</Button>
+            <Button onClick={() => saveOrder().then(() => setCurrentOrder([]))}>Ruaj</Button>
         </div>
     </div >
 }
