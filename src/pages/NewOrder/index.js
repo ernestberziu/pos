@@ -187,7 +187,7 @@ export const NewOrder = () => {
             <span>Tax Totali {currentOrder.reduce((a, c) => { return a = a + (calculateTaxTotal(c) || 0) }, 0)}</span>
             <span>Turni 3 Totali {currentOrder.reduce((a, c) => { return a = a + (calculateExtraNateTotal(c) || 0) }, 0)}</span>
             <span>Totali {currentOrder.reduce((a, c) => { return a = a + (calculateRowTotal(c) || 0) }, 0)}</span>
-            <Button onClick={(async () => {
+            <Button onClick={async () => {
                 if (currentOrder.length) {
                     const item = await API.post('/new', {
                         subtotal: currentOrder.reduce((a, c) => a = a + (calculatePriceTotal(c) || 0), 0),
@@ -213,7 +213,7 @@ export const NewOrder = () => {
                     message.info('Ju duhet te shtoni te pakten nje produkt ne fature')
                 }
 
-            })().then(() => setCurrentOrder([]))}>Ruaj</Button>
+            }}>Ruaj</Button>
         </div>
     </div >
 }
