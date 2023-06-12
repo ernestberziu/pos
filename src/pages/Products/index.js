@@ -79,7 +79,12 @@ export const Products = () => {
         form.resetFields()
         setIsModalOpen(false);
     };
-    const filterProducts = (e) => {
+    const filterProducts = (el) => {
+        if (el === '') {
+            setFilteredProducts(products)
+        } else {
+            setFilteredProducts(products?.filter((e) => e?.barcode?.toString() === el))
+        }
     }
     useEffect(() => {
         API.get('products/products').then((res) => {
