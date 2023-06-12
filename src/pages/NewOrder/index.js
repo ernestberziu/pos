@@ -1,6 +1,6 @@
 import { Button, Input, InputNumber, Table, message } from 'antd'
 import './style.css'
-import { useEffect, useState } from 'react';
+import { createElement, useEffect, useState } from 'react';
 import API from '../../api';
 import { useSelector } from 'react-redux';
 import { receipt } from './receipt'
