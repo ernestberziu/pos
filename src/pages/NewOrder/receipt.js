@@ -23,7 +23,7 @@ export const receipt = ({ settings, order, date, subTotal, totalVat, totalTurni3
     </tr>
     </thead>
     <tbody>
-    ${order.map(item => `<tr><td  style="font-size:150%; font-weight:bold">` + (item.name || item.product_name) + "</td><td>" + item.quantity + "</td><td>" + settings.symbol + parseFloat(item.price).toFixed(2) + "</td></tr>").join('')}
+    ${order.map(item => `<tr><td  style="font-size:14px">` + (item.name || item.product_name) + "</td><td>" + item.quantity + "</td><td>" + settings.symbol + parseFloat(item.price).toFixed(2) + "</td></tr>").join('')}
 <tr>
     <td><b>Nentotali</b></td>
     <td>:</td>
