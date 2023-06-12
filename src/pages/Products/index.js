@@ -80,7 +80,7 @@ export const Products = () => {
         setIsModalOpen(false);
     };
     const filterProducts = (el) => {
-        if (el.target.value === '') {
+        if (!el.target.value) {
             setFilteredProducts(products)
         } else {
             setFilteredProducts(products?.filter((e) => e?.barcode?.toString() === el.target.value))
